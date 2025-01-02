@@ -2,10 +2,10 @@ name: 部署到抱抱脸空间
 on:
   push:
     branches:
-      - main #  仅仅在 main 分支推送时运行
+      - main # 仅仅在 main 分支推送时运行
   workflow_dispatch:
   schedule:
-    - cron: '3 50 * * 2'  # 每天5:50（UTC）的星期二执行
+    - cron: '3 50 * * 2' # 每周二5:50运行
 
 jobs:
   check-secret:
@@ -32,7 +32,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           lfs: true
-
       - name: 移除旧的 .git 配置和初始化新的
         run: |
           git init --initial-branch=main
@@ -41,7 +40,6 @@ jobs:
           git rm -rf --cached .
           git add .
           git commit -m "Initial commit: remove git history"
-
       - name: 将YAML添加到README.md中
         run: |
           echo "---" > temp_readme.md
