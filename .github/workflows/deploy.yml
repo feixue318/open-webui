@@ -1,13 +1,12 @@
 name: 部署到抱抱脸空间
-
 on:
   push:
     branches:
-      - dev
-      - main
+      - main #  仅仅在 main 分支推送时运行
   workflow_dispatch:
   schedule:
-    - cron: '3 50 * * * 2'  
+    - cron: '3 50 * * 2'  # 每天5:50（UTC）的星期二执行
+
 jobs:
   check-secret:
     runs-on: ubuntu-latest
@@ -34,8 +33,14 @@ jobs:
         with:
           lfs: true
 
-      - name: 删除git历史记录
-        run: rm -rf .git
+      - name: 移除旧的 .git 配置和初始化新的
+        run: |
+          git init --initial-branch=main
+          git add .
+          git commit -m "Initial commit: remove git history"
+          git rm -rf --cached .
+          git add .
+          git commit -m "Initial commit: remove git history"
 
       - name: 将YAML添加到README.md中
         run: |
@@ -56,10 +61,9 @@ jobs:
           git config --global user.name "github-actions[bot]"
       - name: 设置Git并推送到抱抱脸空间
         run: |
-          git init --initial-branch=main
           git lfs install
           git lfs track "*.ttf"
           git lfs track "*.jpg"
           git add .
-          git commit -m "GitHub deploy: ${{ github.sha }}"
+          git commit -m "GitHub deploy: Triggered by commit ${{ github.sha }} on branch ${{ github.ref }}"
           git push --force https://${HF_USER}:${HF_TOKEN}@huggingface.co/spaces/${HF_USER}/${HF_REPO} main
