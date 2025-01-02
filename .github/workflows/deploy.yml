@@ -7,7 +7,7 @@ on:
       - main
   workflow_dispatch:
   schedule:
-    - cron: '3 50 * * *'  
+    - cron: '3 50 * * * 2'  
 jobs:
   check-secret:
     runs-on: ubuntu-latest
